@@ -1,0 +1,65 @@
+--4)
+	SELECT buildings.geom as building
+	INTO tableB
+	FROM popp as buildings
+	JOIN majrivers as rivers
+	ON st_within(buildings.geom, st_buffer(rivers.geom, 1000))
+	WHERE buildings.f_codedesc = 'Building';
+
+	SELECT *
+	FROM  tableB;
+	
+--5)
+	SELECT name, elev, geom
+	INTO airportsNew
+	FROM airports;
+	
+	SELECT * 
+	FROM airportsNew;
+	
+--a)
+	SELECT name, st_x(geom)
+	FROM airportsNew
+	ORDER BY st_x(geom) DESC
+	LIMIT 1;
+	
+	SELECT name, st_x(geom)
+	FROM airportsNew
+	ORDER BY st_x(geom) ASC
+	LIMIT 1;
+
+--b)
+	INSERT INTO airportsNew 
+	VALUES 
+	(
+		'airportB', 1234,
+		(
+			SELECT st_centroid 
+			(
+				st_makeLine 
+				(
+					(SELECT geom FROM airportsNew WHERE name = 'ATKA'),
+					(SELECT geom FROM airportsNew WHERE name = 'ANNETTE ISLAND')
+				)
+			)
+		)
+	);
+		
+	SELECT * 
+	FROM airportsNew
+	WHERE name = 'airportB';
+	
+--6)
+	SELECT st_area(st_buffer(st_shortestline(airports.geom, lakes.geom), 1000))
+	FROM lakes, airports
+	WHERE lakes.names = 'Iliamna Lake' AND airports.name = 'AMBLER';
+		
+--7)
+	SELECT trees.vegdesc, SUM(st_area(trees.geom))
+	FROM trees, swamp, tundra
+	WHERE st_contains(trees.geom, swamp.geom) 
+	OR st_contains(trees.geom, tundra.geom)
+	GROUP BY trees.vegdesc;
+		
+	SELECT * FROM trees;
+		
