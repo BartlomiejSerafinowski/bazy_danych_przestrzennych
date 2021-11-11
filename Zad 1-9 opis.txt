@@ -1,0 +1,26 @@
+1. properties warstwy trees, 
+	symbology i zmienić wyświetlanie na categorized
+2. w attribute table zaznaczam po kolei odpowiedni typ drzewa
+	po kolei exportuję je jako warstwę ESRI shapefile
+3. zaznaczamy region który nas interesuje, 
+	eksportujemy jako warstwę, 
+	wchodzimy w narzędzia analizy i wybieramy sum line lenghts
+4. atrribute table, select USE = 'Military', było 8, można jeszcze teoretycznie było dodać do listy joint military, ale samych military jest 8.
+	narzędzia analizy, basic statistics for fields, na screenie 4.1 ustawienia, mean = 593.25
+	attribute table, screen 4.2 z ustawieniami, potem edit mode i delete selected features
+5. dla regionu - export selected as esri shapefile
+	regions, research tools, select by location - 12 budynków
+	geoprocessing tools, clip, river -> bristol bay
+	geoprocessing tools, bufer, screen 5.2
+	clip warstwy popp do bristol bay
+	select by location, wychodzi że wszystkie są w zasięgu 100km od rzeki
+6. analisys tools, line intersection
+7. geometry tools, extract vertices
+8. bufor warstwy airports i railroads, clip jednej do drugiej
+	warstwy dróg nie ma także pominąłem
+	chciałem jeszcze clip warstwy wynikowej do alaski, ale się nie dało, a poza tym ktoś może na wodzie albo w Kanadzie wybudować hotel
+9. geometry tools, simplify, douglas-pecker, tolerance=100
+	i teraz field calculator dla obu warstw, tam sprawdzamy sum("AREAKM2") - dziwne bo wyszło mi dwa razy tak samo, ale sprawdzałem dwa razy dla pewności
+	extract vertices dla obu warstw i w attribute table sprawdzam ilość rekordów dla tabel - po operacji simplify jest ok 800 wierzchołków mniej
+	
+	
