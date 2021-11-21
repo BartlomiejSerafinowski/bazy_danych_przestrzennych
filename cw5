@@ -1,0 +1,45 @@
+--Zad 1
+CREATE EXTENSION postgis;
+
+CREATE TABLE obiekty 
+(
+    id int PRIMARY KEY,
+	nazwa VARCHAR(9) not null,
+    geom geometry not null
+)
+
+INSERT INTO obiekty VALUES
+(1, 'obiekt1', st_geomfromtext('compoundcurve( (0 1, 1 1), circularstring(1 1, 2 0, 3 1), circularstring(3 1, 4 2, 5 1), (5 1, 6 1))'),
+(2, 'obiekt2', st_geomfromext('CURVEPOLYGON(compoundcurve( (10 6, 14 6), circularstring(14 6, 16 4, 14 2), circularstring(14 2, 12 0, 10 2), (10 2, 10 6)), circularstring(13 2, 12 1, 11 2, 12 3, 13 2))')),
+(3, 'obiekt3', st_geomfromtext('multicurve( (7 15, 10 17), (10 17, 12 13), (12 13, 7 15) )')),
+(4, 'obiekt4', st_geomfromtext('multicurve((20 20, 25 25), (25 25, 27 24), (27 24, 25 22), (25 22, 26 21), (26 21, 22 19), (22 19, 20.5 19.5))')),
+(5, 'obiekt5', st_geomfromtext('multipoint(30 30 59, 38 32 234)')),
+(6, 'obiekt6', st_geomfromtext('geometrycollection(point(4 2), linestring(1 1, 3 2))'));
+
+--Zad 2
+SELECT st_area(st_buffer(st_shortestline(
+    (SELECT obiekty.geom FROM obiekty WHERE obiekty.nazwa = 'obiekt3'),
+    (SELECT obiekty.geom FROM obiekty WHERE obiekty.nazwa = 'obiekt4')
+), 5));
+ 
+--Zad 3
+SELECT st_geometrytype(st_linemerge(st_curvetoline(geom))) 
+FROM obiekty WHERE nazwa = 'obiekt4';
+
+SELECT st_addpoint(st_linemerge(st_curvetoline(geom)), st_startpoint(st_linemerge(st_curvetoline(geom)))) 
+INTO tablica
+FROM obiekty WHERE nazwa = 'obiekt4';
+ 
+SELECT st_makepolygon(st_addpoint(st_linemerge(st_curvetoline(geom)), st_startpoint(st_linemerge(st_curvetoline(geom))))) 
+INTO tablica1
+FROM obiekty WHERE nazwa = 'obiekt4';
+ 
+--Zad 4
+INSERT INTO obiekty 
+VALUES (7, 'obiekt7', st_collect(
+    	(SELECT geom FROM obiekty WHERE nazwa = 'obiekt3'),
+    	(SELECT geom FROM obiekty WHERE nazwa = 'obiekt4')));
+ 
+--Zad 5
+SELECT st_area(st_buffer(geom, 5))
+FROM obiekty WHERE NOT st_hasarc(geom);
