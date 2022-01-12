@@ -1,0 +1,1 @@
+SELECT st_union(rast) into rasters_union FROM public.Exports;
